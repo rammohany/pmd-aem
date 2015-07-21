@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<ruleset name="AEM"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>
+        The AEM custom ruleset contains a collection of good practices which should be followed.
+    </description>
+
+	<rule name="AvoidLoginAdministrative"
+          message="Avoid using 'loginAdministrative' method to get the session"
+          class="com.virtusa.aem.pmd.AvoidLoginAdministrativeRule">
+        <description>
+            Avoid using 'loginAdministrative' method to get the session
+            it is unsafe and is deprecated. Instead use repository.loginService()
+        </description>
+        <priority>1</priority>
+
+        <example>
+            <![CDATA[
+            public void doSomething() {
+              repository.loginService(arg0, arg1)
+            }
+        ]]>
+        </example>
+    </rule>
+    
+    <rule name="CheckSessionLogoutRule"
+          message="Make sure that session is closed in finally block"
+          class="com.virtusa.aem.pmd.CheckSessionLogoutRule">
+        <description>
+            Make sure that session is closed in a finally block
+        </description>
+        <priority>1</priority>
+
+        <example>
+            <![CDATA[
+            public void doSomething() {
+              try { 
+                session = repository.loginService(arg0, arg1)
+              } finally {
+                session.logout();
+              }
+            }
+        ]]>
+        </example>
+    </rule>
+
+
+    <rule name="AvoidSessionAtClassLevelRule"
+          message="Do not declare javax.jcr.Session as class level variables"
+          class="com.virtusa.aem.pmd.AvoidSessionAtClassLevelRule">
+        <description>
+            Do not declare javax.jcr.Session as class level variable
+            instead declare it as local variable
+        </description>
+        <priority>1</priority>
+
+        <example>
+            <![CDATA[
+            public void doSomething() {
+                Session session = null;
+              try { 
+                session = repository.loginService(arg0, arg1)
+              } finally {
+                session.logout();
+              }
+            }
+        ]]>
+        </example>
+    </rule>
+
+    <rule name="CheckBindForReferenceRule"
+          message="Reference variable should have a bind method"
+          class="com.virtusa.aem.pmd.CheckBindForReferenceRule">
+        <description>
+            Reference variable should have a bind method
+            or there might be chances that object dependency is not achieved
+            and the variable might not be initialized
+        </description>
+        <priority>2</priority>
+
+        <example>
+            <![CDATA[
+			    @Reference(referenceInterface=SlingRepository.class, bind="bindRepository", cardinality=ReferenceCardinality.MANDATORY_UNARY)
+			    protected SlingRepository repository;
+			    
+			    protected void bindRepository(SlingRepository repo) {
+			        this.repository = repo;
+			    }
+        ]]>
+        </example>
+    </rule>
+
+    <rule name="SuggestToUseUtilityMethodForGetPropertyRule"
+          message="Use an utility method to retrieve property value"
+          class="com.virtusa.aem.pmd.SuggestToUseUtilityMethodForGetPropertyRule">
+        <description>
+            Class contains more than allowed node.getProprety method calls
+            it is suggested to use an Utility method to get node properties
+        </description>
+        <priority>3</priority>
+
+        <example>
+            <![CDATA[
+               public static String getProperty(Node node, String propertyName) {
+			        try {
+			            if (node.hasProperty(propertyName)) {
+			                return node.getProperty(propertyName).getString();   
+			            }
+			        } catch (RepositoryException re) {
+			            LOG.error(re);
+			        }
+			        return null;
+			    }
+        ]]>
+        </example>
+    </rule>
+
+
+
+</ruleset>

@@ -1,0 +1,1 @@
+pmd -d C:\projects\practice\pmd-aem\src -f xml -R C:\projects\practice\pmd-aem\AEM_PMD.xml
